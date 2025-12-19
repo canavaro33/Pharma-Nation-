@@ -1,0 +1,31 @@
+/* Basic Clean Style using Inter font */
+body {
+    font-family: 'Inter', sans-serif;
+    color: #374151;
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+}
+
+.card-header {
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+    font-weight: 600;
+}
+
+.sidebar a.active {
+    background-color: #374151;
+    border-left: 4px solid #3B82F6;
+}
+
+.table thead th {
+    font-weight: 600;
+    color: #4B5563;
+}
+
+/* Transitions */
+.btn {
+    transition: all 0.2s;
+}

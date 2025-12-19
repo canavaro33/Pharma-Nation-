@@ -1,0 +1,77 @@
+<%- include('../layouts/header') %>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Input Obat Masuk</h5>
+                </div>
+                <div class="card-body">
+                    <% if (success) { %>
+                        <div class="alert alert-success">
+                            <%= success %>
+                        </div>
+                        <% } %>
+                            <% if (error) { %>
+                                <div class="alert alert-danger">
+                                    <%= error %>
+                                </div>
+                                <% } %>
+
+                                    <form action="/obat/input" method="POST">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Kode Obat</label>
+                                                <input type="text" class="form-control" name="kode_obat" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Nama Obat</label>
+                                                <input type="text" class="form-control" name="nama_obat" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Batch Code</label>
+                                                <input type="text" class="form-control" name="batch_code" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Satuan</label>
+                                                <select class="form-select" name="satuan" required>
+                                                    <option value="Box">Box</option>
+                                                    <option value="Botol">Botol</option>
+                                                    <option value="Strip">Strip</option>
+                                                    <option value="Tablet">Tablet</option>
+                                                    <option value="Pcs">Pcs</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Tanggal Masuk</label>
+                                                <input type="date" class="form-control" name="tgl_masuk"
+                                                    value="<%= new Date().toISOString().split('T')[0] %>" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Tanggal Expired</label>
+                                                <input type="date" class="form-control" name="tgl_exp" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Jumlah</label>
+                                            <input type="number" class="form-control" name="jumlah" min="1" required>
+                                        </div>
+
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="btn btn-primary">Simpan Data</button>
+                                            <a href="/dashboard" class="btn btn-secondary">Kembali</a>
+                                        </div>
+                                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../layouts/footer') %>

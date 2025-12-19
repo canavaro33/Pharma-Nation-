@@ -1,0 +1,113 @@
+<%- include('../layouts/header') %>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Transaksi Barang Keluar (FIFO)</h5>
+                </div>
+                <div class="card-body">
+                    <% if (success) { %>
+                        <div class="alert alert-success">
+                            <%= success %>
+                        </div>
+                        <% } %>
+                            <% if (error) { %>
+                                <div class="alert alert-danger">
+                                    <%= error %>
+                                </div>
+                                <% } %>
+
+                                    <!-- Step 1: Selection Form -->
+                                    <% if (!preview) { %>
+                                        <form action="/transaksi/fifo/preview" method="POST">
+                                            <div class="row mb-3">
+                                                <div class="col-md-8">
+                                                    <label class="form-label">Pilih Obat</label>
+                                                    <select class="form-select" name="id_obat" required>
+                                                        <option value="">-- Pilih Obat --</option>
+                                                        <% obats.forEach(o=> { %>
+                                                            <option value="<%= o.id_obat %>">
+                                                                <%= o.kode_obat %> - <%= o.nama_obat %> (Stok: <%=
+                                                                            o.stok_total %>
+                                                                            <%= o.satuan %>)
+                                                            </option>
+                                                            <% }) %>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Jumlah Keluar</label>
+                                                    <input type="number" class="form-control" name="jumlah_keluar"
+                                                        min="1" required>
+                                                </div>
+                                            </div>
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn btn-warning">Hitung & Preview
+                                                    FIFO</button>
+                                            </div>
+                                        </form>
+                                        <% } %>
+
+                                            <!-- Step 2: Confirmation / Preview -->
+                                            <% if (preview) { %>
+                                                <div class="alert alert-info">
+                                                    <strong>Konfirmasi Transaksi:</strong><br>
+                                                    Obat: <%= preview.obat.nama_obat %><br>
+                                                        Total Keluar: <%= preview.jumlah_keluar %>
+                                                            <%= preview.obat.satuan %>
+                                                </div>
+
+                                                <div class="table-responsive mb-3">
+                                                    <table class="table table-bordered">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>Batch Code</th>
+                                                                <th>Tgl Masuk</th>
+                                                                <th>Stok Awal</th>
+                                                                <th>Diambil</th>
+                                                                <th>Sisa Stok</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% preview.details.forEach(d=> { %>
+                                                                <tr>
+                                                                    <td>
+                                                                        <%= d.batch_code %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= new
+                                                                            Date(d.tgl_masuk).toLocaleDateString('id-ID')
+                                                                            %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= d.stok_awal %>
+                                                                    </td>
+                                                                    <td class="text-danger fw-bold">- <%= d.diambil %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= d.stok_akhir %>
+                                                                    </td>
+                                                                </tr>
+                                                                <% }) %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <form action="/transaksi/fifo/process" method="POST">
+                                                    <input type="hidden" name="id_obat"
+                                                        value="<%= preview.obat.id_obat %>">
+                                                    <input type="hidden" name="jumlah_keluar"
+                                                        value="<%= preview.jumlah_keluar %>">
+                                                    <div class="d-flex justify-content-between">
+                                                        <a href="/transaksi/fifo" class="btn btn-secondary">Batal</a>
+                                                        <button type="submit" class="btn btn-success fw-bold">Konfirmasi
+                                                            & Proses</button>
+                                                    </div>
+                                                </form>
+                                                <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../layouts/footer') %>

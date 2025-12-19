@@ -1,0 +1,41 @@
+<%- include('../layouts/header') %>
+
+    <div class="card shadow">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Laporan Stok Obat (Ringkasan)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nama Obat</th>
+                            <th>Total Masuk (All time)</th>
+                            <th>Total Keluar (All time)</th>
+                            <th>Stok Saat Ini</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% reportData.forEach(row=> { %>
+                            <tr>
+                                <td>
+                                    <%= row.nama_obat %>
+                                </td>
+                                <td class="text-success">+<%= row.total_masuk %>
+                                </td>
+                                <td class="text-danger">-<%= row.total_keluar %>
+                                </td>
+                                <td class="fw-bold">
+                                    <%= row.stok_akhir %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <button onclick="window.print()" class="btn btn-secondary mt-3"><i class="bi bi-printer"></i> Print
+                Report</button>
+        </div>
+    </div>
+
+    <%- include('../layouts/footer') %>

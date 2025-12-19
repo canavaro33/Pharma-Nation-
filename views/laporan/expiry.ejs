@@ -1,0 +1,56 @@
+<%- include('../layouts/header') %>
+
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Peringatan Kadaluarsa (90 Hari Kedepan)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Kode</th>
+                            <th>Nama Obat</th>
+                            <th>Batch Code</th>
+                            <th>Tgl Expired</th>
+                            <th>Sisa Hari</th>
+                            <th>Stok Batch</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% batches.forEach(b=> { %>
+                            <tr
+                                class="<%= b.sisa_hari < 30 ? 'table-danger' : (b.sisa_hari < 60 ? 'table-warning' : '') %>">
+                                <td>
+                                    <%= b.kode_obat %>
+                                </td>
+                                <td>
+                                    <%= b.nama_obat %>
+                                </td>
+                                <td>
+                                    <%= b.batch_code %>
+                                </td>
+                                <td>
+                                    <%= new Date(b.tgl_exp).toLocaleDateString('id-ID') %>
+                                </td>
+                                <td class="fw-bold">
+                                    <%= b.sisa_hari %> hari
+                                </td>
+                                <td>
+                                    <%= b.jumlah %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% if (batches.length===0) { %>
+                                    <tr>
+                                        <td colspan="6" class="text-center text-success">Tidak ada obat yang mendekati
+                                            kadaluarsa.</td>
+                                    </tr>
+                                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../layouts/footer') %>

@@ -1,0 +1,142 @@
+<%- include('../layouts/header') %>
+
+    <div class="card shadow">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Daftar Stok Obat</h5>
+            <form class="d-flex" action="/obat/list" method="GET">
+                <input class="form-control me-2" type="search" placeholder="Cari obat..." name="q"
+                    value="<%= search %>">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+            </form>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Kode</th>
+                            <th>Nama Obat</th>
+                            <th>Satuan</th>
+                            <th>Total Stok</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (obats.length===0) { %>
+                            <tr>
+                                <td colspan="5" class="text-center">Tidak ada data obat.</td>
+                            </tr>
+                            <% } %>
+                                <% obats.forEach(obat=> { %>
+                                    <tr>
+                                        <td>
+                                            <%= obat.kode_obat %>
+                                        </td>
+                                        <td>
+                                            <%= obat.nama_obat %>
+                                        </td>
+                                        <td>
+                                            <%= obat.satuan %>
+                                        </td>
+                                        <td>
+                                            <% if (obat.stok_total <=10) { %>
+                                                <span class="badge bg-danger">
+                                                    <%= obat.stok_total %>
+                                                </span>
+                                                <% } else { %>
+                                                    <span class="badge bg-success">
+                                                        <%= obat.stok_total %>
+                                                    </span>
+                                                    <% } %>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-info text-white"
+                                                onclick="viewBatch('<%= obat.id_obat %>')">View Batch</button>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Batch -->
+    <div class="modal fade" id="batchModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detail Batch Obat</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Batch Code</th>
+                                    <th>Tgl Masuk</th>
+                                    <th>Tgl Expired</th>
+                                    <th>Stok</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modalBatchBody">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function viewBatch(idObat) {
+            const modalBody = document.getElementById('modalBatchBody');
+            modalBody.innerHTML = '<tr><td colspan="5" class="text-center">Loading...</td></tr>';
+
+            const myModal = new bootstrap.Modal(document.getElementById('batchModal'));
+            myModal.show();
+
+            fetch(`/obat/api/${idObat}/detail`)
+                .then(response => response.json())
+                .then(data => {
+                    modalBody.innerHTML = '';
+                    if (data.length === 0) {
+                        modalBody.innerHTML = '<tr><td colspan="5" class="text-center">Belum ada data batch.</td></tr>';
+                        return;
+                    }
+                    data.forEach(batch => {
+                        const tglMasuk = new Date(batch.tgl_masuk).toLocaleDateString('id-ID');
+                        const tglExp = new Date(batch.tgl_exp).toLocaleDateString('id-ID');
+                        let statusBadge = '';
+
+                        if (batch.status === 'available') statusBadge = '<span class="badge bg-success">Available</span>';
+                        else if (batch.status === 'sold_out') statusBadge = '<span class="badge bg-secondary">Habis</span>';
+                        else if (batch.status === 'expired') statusBadge = '<span class="badge bg-danger">Expired</span>';
+                        else statusBadge = `<span class="badge bg-info">${batch.status}</span>`;
+
+                        const row = `
+                            <tr>
+                                <td>${batch.batch_code}</td>
+                                <td>${tglMasuk}</td>
+                                <td>${tglExp}</td>
+                                <td class="fw-bold">${batch.jumlah}</td>
+                                <td>${statusBadge}</td>
+                            </tr>
+                        `;
+                        modalBody.innerHTML += row;
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    modalBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Gagal memuat data.</td></tr>';
+                });
+        }
+    </script>
+
+    <%- include('../layouts/footer') %>

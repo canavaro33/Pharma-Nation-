@@ -1,0 +1,168 @@
+<%- include('../layouts/header') %>
+
+    <div class="row">
+        <!-- List of Eligible Medicines -->
+        <div class="col-md-5">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Obat Potensial Donasi (Exp < 60 Hari)</h5>
+                </div>
+                <div class="card-body">
+                    <% if (eligible.length===0) { %>
+                        <p class="text-muted">Tidak ada obat yang mendekati kadaluarsa.</p>
+                        <% } else { %>
+                            <div class="list-group">
+                                <% eligible.forEach(item=> { %>
+                                    <button type="button" class="list-group-item list-group-item-action"
+                                        onclick="selectDonation('<%= item.id_batch %>', '<%= item.nama_obat %>', '<%= item.batch_code %>', '<%= item.jumlah %>')">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">
+                                                <%= item.nama_obat %>
+                                            </h6>
+                                            <small class="text-danger">Exp: <%= new
+                                                    Date(item.tgl_exp).toLocaleDateString() %></small>
+                                        </div>
+                                        <p class="mb-1">Batch: <%= item.batch_code %> | Stok: <strong>
+                                                    <%= item.jumlah %>
+                                                </strong></p>
+                                    </button>
+                                    <% }) %>
+                            </div>
+                            <% } %>
+                </div>
+            </div>
+
+            <!-- Donation Form -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Form Donasi</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/donations" method="POST">
+                        <input type="hidden" name="id_batch" id="input_id_batch" required>
+
+                        <div class="mb-3">
+                            <label class="form-label">Obat Dipilih</label>
+                            <input type="text" class="form-control" id="input_nama_obat" readonly
+                                placeholder="Klik obat dari daftar di atas">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Batch Code</label>
+                            <input type="text" class="form-control" id="input_batch_code" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jumlah Donasi</label>
+                            <input type="number" class="form-control" name="jumlah" id="input_jumlah" min="1" required>
+                            <small class="text-muted" id="max_stock_info"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Penerima</label>
+                            <input type="text" class="form-control" name="penerima" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Donasi</label>
+                            <input type="date" class="form-control" name="tgl_donasi"
+                                value="<%= new Date().toISOString().split('T')[0] %>" required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="btnSubmit" disabled>Kirim Donasi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="col-md-7">
+            <div class="card shadow">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Riwayat Donasi</h5>
+                </div>
+                <div class="card-body">
+                    <% if (success) { %>
+                        <div class="alert alert-success">
+                            <%= success %>
+                        </div>
+                        <% } %>
+                            <% if (error) { %>
+                                <div class="alert alert-danger">
+                                    <%= error %>
+                                </div>
+                                <% } %>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tanggal</th>
+                                                    <th>Obat (Batch)</th>
+                                                    <th>Penerima</th>
+                                                    <th>Jml</th>
+                                                    <th>Status</th>
+                                                    <th>Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% history.forEach(h=> { %>
+                                                    <tr>
+                                                        <td>
+                                                            <%= new Date(h.tgl_donasi).toLocaleDateString() %>
+                                                        </td>
+                                                        <td>
+                                                            <%= h.nama_obat %> <br><small class="text-muted">
+                                                                    <%= h.batch_code %>
+                                                                </small>
+                                                        </td>
+                                                        <td>
+                                                            <%= h.penerima %>
+                                                        </td>
+                                                        <td>
+                                                            <%= h.jumlah %>
+                                                        </td>
+                                                        <td>
+                                                            <span
+                                                                class="badge <%= h.status === 'Pending' ? 'bg-warning' : (h.status === 'Selesai' ? 'bg-success' : 'bg-info') %>">
+                                                                <%= h.status %>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <form action="/donations/update-status" method="POST"
+                                                                class="d-inline">
+                                                                <input type="hidden" name="id_donasi"
+                                                                    value="<%= h.id_donasi %>">
+                                                                <select name="status" class="form-select form-select-sm"
+                                                                    onchange="this.form.submit()">
+                                                                    <option value="" disabled selected>Update</option>
+                                                                    <option value="Pending">Pending</option>
+                                                                    <option value="Dikirim">Dikirim</option>
+                                                                    <option value="Selesai">Selesai</option>
+                                                                </select>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectDonation(id, nama, code, stok) {
+            document.getElementById('input_id_batch').value = id;
+            document.getElementById('input_nama_obat').value = nama;
+            document.getElementById('input_batch_code').value = code;
+            document.getElementById('input_jumlah').max = stok;
+            document.getElementById('max_stock_info').innerText = 'Max: ' + stok;
+            document.getElementById('btnSubmit').disabled = false;
+        }
+    </script>
+
+    <%- include('../layouts/footer') %>
