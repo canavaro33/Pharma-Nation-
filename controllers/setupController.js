@@ -1,7 +1,5 @@
 const db = require('../config/database');
 const bcrypt = require('bcryptjs');
-const fs = require('fs');
-const path = require('path');
 
 exports.setupDatabase = async (req, res) => {
     try {
