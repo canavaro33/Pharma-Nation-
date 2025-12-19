@@ -41,6 +41,7 @@ const obatRoutes = require('./routes/obatRoutes');
 const transaksiRoutes = require('./routes/transaksiRoutes');
 const laporanRoutes = require('./routes/laporanRoutes');
 const donasiRoutes = require('./routes/donasiRoutes');
+const setupController = require('./controllers/setupController');
 
 // Use Routes
 app.use('/', authRoutes);
@@ -49,6 +50,9 @@ app.use('/obat', obatRoutes);
 app.use('/transaksi', transaksiRoutes);
 app.use('/laporan', laporanRoutes);
 app.use('/donations', donasiRoutes);
+
+// Setup Route (HAPUS SETELAH SETUP SELESAI!)
+app.get('/setup', setupController.setupDatabase);
 
 // Root Route
 app.get('/', (req, res) => {
