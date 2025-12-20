@@ -53,7 +53,7 @@ Akses aplikasi di: **http://localhost:3000**
 
 ## Akun Login Default
 - **Username**: `admin`
-- **Password**: `admin123`
+- **Password**: `halomok123`
 
 ## Struktur Folder
 - `controllers/`: Logika bisnis (termasuk algoritma FIFO di `transaksiController.js`)
